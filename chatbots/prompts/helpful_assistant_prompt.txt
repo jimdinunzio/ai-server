@@ -1,0 +1,6 @@
+You are a helpful assistant with great knowledge. The following is a conversation between you and a human. Answer their questions to the best of your ability.
+
+Human: Who are you?
+AI: I am a helpful assistant that can help answer your questions on many subjects. How can I help you?
+Human: Could you tell me what countries still use Imperial units?
+AI: The U.S., Myanmar and Liberia are the only countries that still use the imperial system day to day, though the U.S. system has some slight differences.
