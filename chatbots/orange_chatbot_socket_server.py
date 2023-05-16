@@ -44,7 +44,8 @@ def orange_chatbot_server():
                     bot = None
                     return
                 else:
-                    answer = chatbot.get_response(inp)
+                    answer, _, long = chatbot.get_response(inp)
+                    print(f"\n------------------------------\n{long}\n-----------------------------\n")
                     send_msg_real(conn, answer)  # send answer to the client
                     inp = inp.lower()
                     if "goodbye" not in inp:

@@ -19,7 +19,7 @@ class GptJChatbot:
     
     def get_response(self, input):
         prompt = f'{self.init_prompt}{self.chat_log}\n{self.name1_label}: {input}\n{self.name2_label}: '
-        #print(f'submitting:\n{prompt}\n-------------------------------\n')
+        print(f'submitting:\n{prompt}\n-------------------------------')
 
         inputs = self.tokenizer([prompt], return_tensors="pt").to(self.device)
 
@@ -35,22 +35,38 @@ class GptJChatbot:
         ).to(self.device)
          
         full_resp = self.tokenizer.batch_decode(self.reply_ids)[0]
-        #full_resp = f'{prompt}Thats very interesting. Tell me more.\nHuman:'
-        resp = full_resp.replace(f"{self.init_prompt}{self.chat_log}", "")
-        print(f"\n------------------------------\n{resp}\n-----------------------------\n")
-        re = resp.split(f"\n{self.name2_label}:")           # split at robot: 
-        if self.name1_label in re:                          # if Human: in reply then 
-            res = re[1].split(f"\n{self.name1_label}:")[0]  # take the text between robot: and human:
-        else:                                               # otherwise split at the next newline
-            res = re[1].split("\n")[0]
-        if "." in res:
-            res = res.strip().rpartition('.')[0]            # strip white space and take up to last period.
-            if len(res):
-                res += '.'
+        #full_resp = f'{prompt}Thats very interesting. Tell me more.\n{name1_label}:'
+        long_resp = full_resp.replace(f"{self.init_prompt}{self.chat_log}", "")
+        long_resp = long_resp.strip()
+        #print(f"--------------------------\n{long_resp}\n-------------------------------")
+        # split at <name2_label>: (chatbot)
+        med_resp = long_resp.split(f"\n{self.name2_label}:")
+        # if <name2_label>: (input source) in reply then take the text between it and <name1_label>: (input source)
+        if len(med_resp) > 0:
+            if self.name1_label+':' in med_resp[1]:
+                med_resp = med_resp[1].split(f"\n{self.name1_label}:")[0]
+                short_resp = med_resp
+            elif self.name2_label+':' in med_resp[1]:
+                med_resp = med_resp[1].split(f"\n{self.name2_label}:")[0]
+                short_resp = med_resp
+            else:                                          
+                # otherwise split at the next newline for short response, to end for medium resp
+                med_resp = med_resp[1]
+                short_resp = med_resp[1].split("\n")[0]
         else:
-            res = res.strip()
-    
-        return res
+            med_resp = med_resp[0]
+            short_resp = med_resp
+        # strip white space and take up to last period for short resp.
+        med_resp = med_resp.strip()
+        if "." in short_resp:
+            short_resp = short_resp.strip().rpartition('.')[0]
+            if len(short_resp):
+                short_resp += '.'
+        else:
+            short_resp = short_resp.strip()
+
+        #print(f"----------------------------------\nSHORT = {short_resp}\n----------------------\nMED = {med_resp}\n----------------------------------\nLONG = {long_resp}\n---------------------------")
+        return short_resp, med_resp, long_resp
     
     def add_to_chat_log(self, name1_utt, name2_utt):
         self.chat_log += f'\n{self.name1_label}:{name1_utt}\n{self.name2_label}:{name2_utt}'

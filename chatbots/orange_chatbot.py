@@ -29,7 +29,8 @@ if __name__ == "__main__":
         if inp == ".log":
             print(chat_bot.get_log())
             continue
-        answer = chat_bot.get_response(inp)
+        answer, _, long = chat_bot.get_response(inp)
+        print(f"\n------------------------------\n{long}\n-----------------------------\n")
         chat_bot.add_to_chat_log(inp, answer)
         print(answer)
     bot.stop()

@@ -27,7 +27,8 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                 chatbot.init_chat_log()
                 send_msg_real(conn, "chatbot reset")
             else:
-                answer = chatbot.get_response(inp)
+                answer, _, long = chatbot.get_response(inp)
+                print(f"\n------------------------------\n{long}\n-----------------------------\n")
                 send_msg_real(conn, answer)  # send answer to the client
                 if inp.lower() != "goodbye":
                     chatbot.add_to_chat_log(inp, answer)
